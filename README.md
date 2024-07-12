@@ -1,7 +1,7 @@
 # SNPlotify
 
 SNPlotify is a Python script for plotting supernova spectra and ionization lines, with adjustable redshift and explosion velocity parameters.
-Fully written with ChatGPT!
+Fully written with ChatGPT and largely stolen from the [Transient Name Server](https://www.wis-tns.org/)!
 
 ## Features
 
