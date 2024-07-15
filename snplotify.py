@@ -70,20 +70,19 @@ class SNPlotter:
         for idx, (element, wavelengths) in enumerate(self.ion_lines.items()):
             lines = []
             for wavelength in wavelengths:
-                if self.spectrum_data['wavelength'].min() <= wavelength <= self.spectrum_data['wavelength'].max():
-                    line, = self.ax.plot([wavelength, wavelength], [0, max(self.spectrum_data['flux'])], linestyle='--', color=colors[idx], visible=False)
-                    lines.append(line)
+                line, = self.ax.plot([wavelength, wavelength], [0, max(self.spectrum_data['flux'])], linestyle='--', color=colors[idx], visible=False)
+                lines.append(line)
             self.line_objects[element] = lines
 
         self.telluric_line_objects = []
         for wavelength in self.telluric_lines:
-            if self.spectrum_data['wavelength'].min() <= wavelength <= self.spectrum_data['wavelength'].max():
-                line, = self.ax.plot([wavelength, wavelength], [0, max(self.spectrum_data['flux'])], linestyle='--', color='gray')
-                self.telluric_line_objects.append(line)
+            line, = self.ax.plot([wavelength, wavelength], [0, max(self.spectrum_data['flux'])], linestyle='--', color='gray', visible=False)
+            self.telluric_line_objects.append(line)
 
         self.ax.set_xlabel('Wavelength (Å)')
         self.ax.set_ylabel('Flux')
         self.ax.set_title('Supernova Spectrum with Ionization Lines')
+        self.ax.set_xlim([self.spectrum_data['wavelength'].min(), self.spectrum_data['wavelength'].max()])
 
         axcolor = 'lightgoldenrodyellow'
         self.ax_slider_redshift = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor=axcolor)
@@ -107,10 +106,11 @@ class SNPlotter:
             for i, wavelength in enumerate(wavelengths):
                 doppler_factor = (1 - self.v_exp / self.c) / np.sqrt(1 - (self.v_exp / self.c) ** 2)
                 redshifted_wavelength = wavelength * (1 + self.redshift) * doppler_factor
-                if self.spectrum_data['wavelength'].min() <= redshifted_wavelength <= self.spectrum_data['wavelength'].max():
-                    self.line_objects[element][i].set_xdata([redshifted_wavelength, redshifted_wavelength])
+                self.line_objects[element][i].set_xdata([redshifted_wavelength, redshifted_wavelength])
+                if self.check.get_status()[list(self.ion_lines.keys()).index(element)]:
+                    self.line_objects[element][i].set_visible(True)
                 else:
-                    self.line_objects[element][i].set_xdata([None, None])
+                    self.line_objects[element][i].set_visible(False)
         self.ax.set_title(f'Supernova Spectrum with Ionization Lines (Redshift: {self.redshift:.2f}, v_exp: {self.v_exp:.0f} km/s)')
         self.fig.canvas.draw_idle()
 
